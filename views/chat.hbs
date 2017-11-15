@@ -2,37 +2,87 @@
 <html>
   <head>
     <title>Chat App</title>
+
+    <!-- /*<style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        background: #000; padding: 3px;
+        position: fixed; bottom: 0;
+        width: 100%;
+      }
+      form input {
+        border: 0;
+        padding: 10px;
+        width: 90%;
+        margin-right: .5%;
+      }
+      form button {
+        width: 9%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages li {
+        padding: 5px 10px;
+      }
+      #messages li:nth-child(odd) {
+        background: #eee;
+      }
+    </style>*/ -->
+
   </head>
   <body>
+
+    <!-- <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form -->
+
+    <!-- onkeypress: event to send message -->
     <input id="message" onkeypress="send_message(event)">
+    <!-- makes input/chatbox -->
     <pre id="chat-box"></pre>
+
     <script src="/socket-io/socket.io.js"></script>
+
     <script>
-      var server = io();
+      var server = io();  //do not neeed to specify url
+
       var room;
 
       server.on('connect', function (s) {
         console.log('connected');
 
+        //on connect
         var url = new URL(location.href);
-        room = url.searchParams.get('room') || 'main-room';
-        server.emit('join-room', room);
+        room = url.searchParams.get('room') || 'main-room'; //check if there is a room parameter, joins room
+        server.emit('join-room', room)
       });
 
       server.on('chat-msg', function (msg) {
-        var chat = document.getElementById("chat-box");
-        chat.insertAdjacentHTML('beforeend', '\n' + msg);
+        var chat = document.getElementById("chat-box"); //gets chat message
+        chat.insertAdjacentHTML('beforeend', '\n' + msg); //inserts message into chatbox
       });
 
+      //sends message
       function send_message (event) {
         var char = event.which || event.keyCode;
-        if (char == '13') {
-          var msg = document.getElementById("message");
-          // server.emit('incoming', msg.value);
-          // sending message
-          server.emit('incoming', {room: room, msg: msg.value});
-
-          msg.value = '';
+        if (char == '13') { //if statement to check what key is entered
+          var msg = document.getElementById("message"); //gets message
+          server.emit('incoming', {room: room, msg: msg.value}); //sending message
+          msg.value = ''; //resets message value
         }
       }
     </script>
